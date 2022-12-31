@@ -30,8 +30,8 @@ dependencyResolutionManagement {
                 println githubProperties['gpr.usr']
                 println githubProperties['gpr.key']
 
-                username = githubProperties['gpr.usr']
-                password = githubProperties['gpr.key']
+                username githubProperties['gpr.usr']
+                password githubProperties['gpr.key']
             }
         }
     }
