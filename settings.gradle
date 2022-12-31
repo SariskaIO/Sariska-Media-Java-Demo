@@ -8,7 +8,7 @@ pluginManagement {
     }
 }
 
-def getLocalProperties() {
+def getGithubProperties() {
     Properties props = new Properties()
     if (file("github.properties").exists()) {
         props.load(new FileInputStream(file("github.properties")))
@@ -16,7 +16,18 @@ def getLocalProperties() {
     return props
 }
 
-Properties githubProperties = getLocalProperties()
+Properties githubProperties = getGithubProperties()
+
+def getLocalProperties() {
+    Properties props = new Properties()
+    if (file("local.properties").exists()) {
+        props.load(new FileInputStream(file("local.properties")))
+    }
+    return props
+}
+
+
+Properties localProperties = getLocalProperties()
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -26,10 +37,8 @@ dependencyResolutionManagement {
         maven {
             url = "https://maven.pkg.github.com/SariskaIO/maven-repository"
             credentials {
-                println "Loggin Credentials - Remove Later"
-                println githubProperties['gpr.key']
-                username = githubProperties['gpr.usr']
-                password = githubProperties['gpr.key']
+                username = localProperties['githubUsername'] ?: githubProperties['gpr.usr']
+                password = localProperties['githubPassoword'] ?: githubProperties['gpr.key']
             }
         }
     }
