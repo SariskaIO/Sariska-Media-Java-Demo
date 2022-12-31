@@ -29,7 +29,7 @@ dependencyResolutionManagement {
                 println "Loggin Credentials - Remove Later"
                 println githubProperties['gpr.usr']
                 println githubProperties['gpr.key']
-                println ${{ secrets.TOKEN_SECRET_GITHUB }}
+                println secrets.TOKEN_SECRET_GITHUB
 
                 username githubProperties['gpr.usr']
                 password githubProperties['gpr.key']
