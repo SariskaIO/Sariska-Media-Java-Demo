@@ -1,3 +1,5 @@
+
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -5,6 +7,17 @@ pluginManagement {
         mavenCentral()
     }
 }
+
+def getLocalProperties() {
+    Properties props = new Properties()
+    if (file("github.properties").exists()) {
+        props.load(new FileInputStream(file("local.properties")))
+    }
+    return props
+}
+
+Properties githubProperties = getLocalProperties()
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -13,8 +26,8 @@ dependencyResolutionManagement {
         maven {
             url = "https://maven.pkg.github.com/SariskaIO/maven-repository"
             credentials {
-                username = "dipak140"
-                password = "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"
+                username = githubProperties['gpr.usr']
+                password = githubProperties['gpr.key']
             }
         }
     }
