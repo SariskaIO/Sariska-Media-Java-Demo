@@ -15,7 +15,7 @@ jobs:
         
       - name: Run
         run: 
-          sed -ir "s/^[#]*\s*gpr.usr=.*/gpr.usr=${{${{ secrets.GITHUB_TOKEN }}}}/" github.properties
+           sed -ir "s/^[#]*\s*gpr.usr=.*/gpr.usr=${{ secrets.GITHUB_TOKEN }}/" github.properties
           
         
       - name: Upload html test report
