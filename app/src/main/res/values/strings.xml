@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Sariska-Media-Java-Demo</string>
+    <string name="app_name">sariskademojava</string>
+    <string name="blob_provider_authority">io.sariskamediajava.blob</string>
 </resources>
