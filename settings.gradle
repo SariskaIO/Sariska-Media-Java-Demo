@@ -10,6 +10,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = "https://maven.pkg.github.com/SariskaIO/maven-repository"
+            credentials {
+                username = "dipak140"
+                password = "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"
+            }
+        }
     }
 }
 rootProject.name = "Sariska-Media-Java-Demo"
