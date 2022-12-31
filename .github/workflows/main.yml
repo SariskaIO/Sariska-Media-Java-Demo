@@ -13,11 +13,14 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
         
-      - name: Run
+      - name: Add credentials
         run: 
-           sed -ir "s/^[#]*\s*gpr.usr=.*/gpr.usr=${{ secrets.GITHUB_TOKEN }}/" github.properties
+           sed -ir "s/^[#]*\s*gpr.key=.*/gpr.key=${{ secrets.GITHUB_TOKEN }}/" github.properties
           
-        
+      - name: Run Gradle
+        run: 
+           ./gradlew build
+           
       - name: Upload html test report
         uses: actions/upload-artifact@v2
         with:
