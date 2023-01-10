@@ -2,6 +2,7 @@ package io.sariska.sariska_media_java_demo;
 
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -38,8 +39,10 @@ public class CallingPageActivity extends AppCompatActivity {
     private ImageView endCallView;
     private ImageView muteAudioView;
     private ImageView muteVideoView;
+    private ImageView startStreamingView;
     private boolean audioState;
     private boolean videoState;
+    String roomName = "";
 
     private Bundle optionsBundle;
 
@@ -71,11 +74,13 @@ public class CallingPageActivity extends AppCompatActivity {
         endCallView = findViewById(R.id.endcall);
         muteAudioView = findViewById(R.id.muteAudio);
         muteVideoView = findViewById(R.id.muteVideo);
+        startStreamingView = findViewById(R.id.startRecording);
+
         alert = getBuilder().create();
         ButterKnife.bind(this);
 
         optionsBundle = getIntent().getExtras();
-        String roomName = optionsBundle.getString("Room Name");
+        this.roomName = optionsBundle.getString("Room Name");
         String userName = optionsBundle.getString("User Name");
         audioState = optionsBundle.getBoolean("audio");
         videoState = optionsBundle.getBoolean("video");
@@ -108,6 +113,8 @@ public class CallingPageActivity extends AppCompatActivity {
         rvOtherMembers.setAdapter(sariskaRemoteAdapter);
         addRequiredListener(alert);
     }
+
+
 
     private void addRequiredListener(AlertDialog alert) {
 
@@ -155,6 +162,27 @@ public class CallingPageActivity extends AppCompatActivity {
                 }
             }
         });
+
+        startStreamingView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startStreaming(roomName);
+            }
+        });
+    }
+
+    private void startStreaming(String roomName){
+        System.out.println("Room NAme: "+ roomName);
+        Thread streamingThread = new Thread(() -> {
+            try {
+                String streamingToken = GetToken.generateToken("streamer");
+                String rtmpURL = StartStreamingCaller.startStreaming(streamingToken, roomName);
+                System.out.println("rtmpURL: " + rtmpURL);
+            }catch (IOException e){
+                System.out.println(e);
+            }
+        });
+        streamingThread.start();
     }
 
     private void createConference() {

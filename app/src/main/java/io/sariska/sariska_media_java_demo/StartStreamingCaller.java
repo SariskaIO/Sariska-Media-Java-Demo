@@ -14,11 +14,12 @@ public class StartStreamingCaller {
         OkHttpClient client = new OkHttpClient();
         final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         String url = "https://streaming.sariska.io/user/startRecording?room_name="+roomName;
+        System.out.println("URL: "+ url);
         Request request = new Request.Builder()
                 .url(url)
                 .get()
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", token)
+                .addHeader("Authorization", "Bearer "+ token)
                 .build();
         try(Response response = client.newCall(request).execute()){
             assert response.body() != null;

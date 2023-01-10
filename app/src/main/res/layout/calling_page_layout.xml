@@ -16,7 +16,18 @@
             android:clickable="true"
             android:focusable="true"
             android:orientation="vertical"
-            />
+            >
+
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/startRecording"
+            android:layout_width="40dp"
+            android:layout_marginTop="40dp"
+            android:layout_centerHorizontal="true"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_baseline_adjust_24" />
 
         <ImageView
             android:id="@+id/endcall"
@@ -64,7 +75,6 @@
             app:reverseLayout="false"
             tools:itemCount="5"
             tools:listitem="@layout/row_item_remote_views" />
-
 
 
     </RelativeLayout>
