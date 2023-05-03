@@ -48,13 +48,6 @@ public class CallingPageActivity extends AppCompatActivity {
 
     private List<JitsiLocalTrack> localTracks;
 
-    String[] PERMISSIONS = {
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.RECORD_AUDIO
-    };
-
-    int PERMISSION_ALL = 1;
-
     private WebRTCView localView;
 
     @BindView(R.id.remoteRecycleView)
@@ -80,9 +73,7 @@ public class CallingPageActivity extends AppCompatActivity {
         audioState = optionsBundle.getBoolean("audio");
         videoState = optionsBundle.getBoolean("video");
 
-        if (!hasPermissions(this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-        }
+
 
         SariskaMediaTransport.initializeSdk(getApplication());
         this.setupLocalStream(optionsBundle.getBoolean("audio"), optionsBundle.getBoolean("video"));
@@ -227,16 +218,7 @@ public class CallingPageActivity extends AppCompatActivity {
         });
     }
 
-    private boolean hasPermissions(CallingPageActivity context, String[] permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+
     public Builder getBuilder(){
         Builder builder = new Builder(CallingPageActivity.this);
         builder.setMessage("Are you sure you want to leave?");
