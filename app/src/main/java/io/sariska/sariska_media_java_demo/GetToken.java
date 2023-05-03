@@ -24,7 +24,7 @@ public class GetToken {
                 "    \"user\": {\n" +
                 "        \"id\": \"dsds\",\n" +
                 "        \"name\": \"SomeOne\",\n" +
-                "        \"moderator\": false,\n" +
+                "        \"moderator\": true,\n" +
                 "        \"email\": \"dipak@work.com\",\n" +
                 "        \"avatar\":\"null\"\n" +
                 "    }\n" +
