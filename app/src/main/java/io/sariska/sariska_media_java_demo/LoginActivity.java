@@ -1,12 +1,14 @@
 package io.sariska.sariska_media_java_demo;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -15,11 +17,20 @@ public class LoginActivity extends AppCompatActivity {
     Boolean isVideoMuted = false;
     Boolean isSpeakerOn = false;
     Bundle bundle = new Bundle();
+    int PERMISSION_ALL = 1;
+    String[] PERMISSIONS = {
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.RECORD_AUDIO
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page_layout);
+
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
 
         TextView roomName = (TextView) findViewById(R.id.roomName);
         TextView username = (TextView) findViewById(R.id.username);
@@ -91,5 +102,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private boolean hasPermissions(LoginActivity context, String[] permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

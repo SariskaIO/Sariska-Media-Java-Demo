@@ -22,9 +22,8 @@ public class GetToken {
         String json = "{\n" +
                 "    \"apiKey\": \"249202aabed00b41363794b526eee6927bd35cbc9bac36cd3edcaa\",\n" +
                 "    \"user\": {\n" +
-                "        \"id\": \"dsds\",\n" +
-                "        \"name\": \"SomeOne\",\n" +
-                "        \"moderator\": false,\n" +
+                "        \"name\": \""+userID+"\",\n" +
+                "        \"moderator\": true,\n" +
                 "        \"email\": \"dipak@work.com\",\n" +
                 "        \"avatar\":\"null\"\n" +
                 "    }\n" +
