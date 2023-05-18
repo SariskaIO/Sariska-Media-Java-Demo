@@ -1,9 +1,11 @@
 package io.sariska.sariska_media_java_demo;
 
+import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.react.bridge.ReactContext;
+import com.oney.WebRTCModule.GetUserMediaImpl;
 import com.oney.WebRTCModule.WebRTCView;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,6 +48,7 @@ public class CallingPageActivity extends AppCompatActivity {
 
     private Bundle optionsBundle;
 
+    private static Intent dataPermissionIntent;
 
     private RelativeLayout mLocalContainer;
 
@@ -52,11 +56,16 @@ public class CallingPageActivity extends AppCompatActivity {
 
     private WebRTCView localView;
 
+    private ReactContext reactContext;
+
     @BindView(R.id.remoteRecycleView)
     RecyclerView rvOtherMembers;
     ArrayList<JitsiRemoteTrack> remoteTrackArrayList;
     RemoteAdapter sariskaRemoteAdapter;
     AlertDialog alert;
+
+    // Need activity to pass it down to Get User Media Impl
+    Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,17 +77,18 @@ public class CallingPageActivity extends AppCompatActivity {
         muteVideoView = findViewById(R.id.muteVideo);
         shareScreenView = findViewById(R.id.sharescreen);
         switchCameraView = findViewById(R.id.switchcamera);
-
         alert = getBuilder().create();
         ButterKnife.bind(this);
-
         optionsBundle = getIntent().getExtras();
+        mActivity = this;
+
         String roomName = optionsBundle.getString("Room Name");
         String userName = optionsBundle.getString("User Name");
         audioState = optionsBundle.getBoolean("audio");
         videoState = optionsBundle.getBoolean("video");
 
         SariskaMediaTransport.initializeSdk(getApplication());
+
         this.setupLocalStream(optionsBundle.getBoolean("audio"), optionsBundle.getBoolean("video"));
 
         Thread tokenThread = new Thread(() -> {
@@ -153,28 +163,54 @@ public class CallingPageActivity extends AppCompatActivity {
         shareScreenView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle options = new Bundle();
-                options.putBoolean("desktop", true);
-                SariskaMediaTransport.createLocalTracks(options, tracks ->{
-                    System.out.println("Desktop Created");
-                    desktopTrack = tracks.get(0);
-                    // Add desktop track to local track
-                    localTracks.add(desktopTrack);
-                    for(JitsiLocalTrack track:localTracks){
-                        if(track.getType().equals("video")){
-                            System.out.println("inside video track");
-                            conference.replaceTrack(track,desktopTrack);
-                        }
-                    }
-                });
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(new Intent(mActivity, SariskaScreenCaptureService.class));
+                }
+                // Get the projection manager
+                new Handler().postDelayed(() -> {
+                    // code to be executed after 10 seconds
+                    reactContext = SariskaMediaTransport.getReactContext();
+                    reactContext.onHostResume(mActivity);
+                    setupDesktopTrack();
+                }, 5000);
             }
         });
     }
 
+    private void setupDesktopTrack() {
+        Bundle options = new Bundle();
+        options.putBoolean("desktop", true);
+        SariskaMediaTransport.createLocalTracks(options, tracks ->{
+            System.out.println("Desktop Created");
+            System.out.println(tracks.get(0).getType());
+            desktopTrack = tracks.get(0);
+            // Add desktop track to local track
+            //localTracks.add(desktopTrack);
+            localTracks.remove(localTracks.get(1));
+            for(JitsiLocalTrack track:localTracks){
+                if(track.getType().equals("video")){
+                    System.out.println("inside video track");
+                    conference.removeTrack(track);
+                    conference.addTrack(desktopTrack);
+                }
+            }
+        });
+    }
+    // Invoked from startActivityResult inside React-Native-Webrtc
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        dataPermissionIntent = data;
+        GetUserMediaImpl.setMediaData(data);
+    }
+
+    // Important for Screen Sharing
+    public static Intent getMediaProjectionPermissionDetails(){
+        return dataPermissionIntent;
+    }
+
     private void createConference() {
-
         conference = connection.initJitsiConference();
-
         conference.addEventListener("CONFERENCE_JOINED", () -> {
             for (JitsiLocalTrack track : localTracks) {
                 conference.addTrack(track);
@@ -225,7 +261,6 @@ public class CallingPageActivity extends AppCompatActivity {
         options.putBoolean("audio", audio);
         options.putBoolean("video", video);
         options.putInt("resolution", 360);
-
         SariskaMediaTransport.createLocalTracks(options, tracks -> {
             runOnUiThread(() -> {
                 localTracks = tracks;
@@ -299,4 +334,5 @@ public class CallingPageActivity extends AppCompatActivity {
             }
         }
     }
+
 }
