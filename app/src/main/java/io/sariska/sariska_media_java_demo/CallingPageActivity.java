@@ -163,16 +163,31 @@ public class CallingPageActivity extends AppCompatActivity {
         shareScreenView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                for(JitsiLocalTrack track:localTracks){
+                    if(track.getType().equals("video")){
+                        System.out.println("inside video track");
+                        conference.removeTrack(track);
+                        localTracks.remove(track);
+                        System.out.println("Local Tracks Size: " + localTracks.size());
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLocalContainer.removeAllViews();
+                    }
+                });
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(new Intent(mActivity, SariskaScreenCaptureService.class));
                 }
                 // Get the projection manager
                 new Handler().postDelayed(() -> {
-                    // code to be executed after 10 seconds
+                    // code to be executed after 1 seconds
                     reactContext = SariskaMediaTransport.getReactContext();
                     reactContext.onHostResume(mActivity);
                     setupDesktopTrack();
-                }, 5000);
+                }, 1000);
             }
         });
     }
@@ -182,18 +197,9 @@ public class CallingPageActivity extends AppCompatActivity {
         options.putBoolean("desktop", true);
         SariskaMediaTransport.createLocalTracks(options, tracks ->{
             System.out.println("Desktop Created");
-            System.out.println(tracks.get(0).getType());
             desktopTrack = tracks.get(0);
-            // Add desktop track to local track
-            //localTracks.add(desktopTrack);
-            localTracks.remove(localTracks.get(1));
-            for(JitsiLocalTrack track:localTracks){
-                if(track.getType().equals("video")){
-                    System.out.println("inside video track");
-                    conference.removeTrack(track);
-                    conference.addTrack(desktopTrack);
-                }
-            }
+            localTracks.add(desktopTrack);
+            conference.addTrack(desktopTrack);
         });
     }
     // Invoked from startActivityResult inside React-Native-Webrtc
@@ -201,6 +207,7 @@ public class CallingPageActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         dataPermissionIntent = data;
+        System.out.println("sdadadasd");
         GetUserMediaImpl.setMediaData(data);
     }
 
@@ -228,9 +235,13 @@ public class CallingPageActivity extends AppCompatActivity {
 
         conference.addEventListener("TRACK_ADDED", p -> {
             JitsiRemoteTrack track = (JitsiRemoteTrack) p;
-            if (track.getStreamURL().equals(localTracks.get(1).getStreamURL())) {
-                //So as to not add local track in remote container
-                return;
+            for(JitsiLocalTrack track1: localTracks){
+                if(track1.getType().equals("video")){
+                    if (track.getStreamURL().equals(track1.getStreamURL())) {
+                        //So as to not add local track in remote container
+                        return;
+                    }
+                }
             }
             runOnUiThread(() -> {
                 if (track.getType().equals("video")) {
@@ -259,7 +270,7 @@ public class CallingPageActivity extends AppCompatActivity {
     private void setupLocalStream(boolean audio, boolean video){
         Bundle options = new Bundle();
         options.putBoolean("audio", audio);
-        options.putBoolean("video", video);
+        options.putBoolean("video", true);
         options.putInt("resolution", 360);
         SariskaMediaTransport.createLocalTracks(options, tracks -> {
             runOnUiThread(() -> {
