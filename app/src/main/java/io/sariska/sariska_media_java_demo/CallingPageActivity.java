@@ -34,7 +34,7 @@ public class CallingPageActivity extends AppCompatActivity {
 
     private Connection connection;
     private Conference conference;
-
+    JitsiLocalTrack desktopTrack;
     private ImageView endCallView;
     private ImageView muteAudioView;
     private ImageView muteVideoView;
@@ -77,8 +77,6 @@ public class CallingPageActivity extends AppCompatActivity {
         String userName = optionsBundle.getString("User Name");
         audioState = optionsBundle.getBoolean("audio");
         videoState = optionsBundle.getBoolean("video");
-
-
 
         SariskaMediaTransport.initializeSdk(getApplication());
         this.setupLocalStream(optionsBundle.getBoolean("audio"), optionsBundle.getBoolean("video"));
@@ -149,6 +147,26 @@ public class CallingPageActivity extends AppCompatActivity {
                         }
                     }
                 }
+            }
+        });
+
+        shareScreenView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle options = new Bundle();
+                options.putBoolean("desktop", true);
+                SariskaMediaTransport.createLocalTracks(options, tracks ->{
+                    System.out.println("Desktop Created");
+                    desktopTrack = tracks.get(0);
+                    // Add desktop track to local track
+                    localTracks.add(desktopTrack);
+                    for(JitsiLocalTrack track:localTracks){
+                        if(track.getType().equals("video")){
+                            System.out.println("inside video track");
+                            conference.replaceTrack(track,desktopTrack);
+                        }
+                    }
+                });
             }
         });
     }
