@@ -38,6 +38,8 @@ public class CallingPageActivity extends AppCompatActivity {
     private ImageView endCallView;
     private ImageView muteAudioView;
     private ImageView muteVideoView;
+    private ImageView shareScreenView;
+    private ImageView switchCameraView;
     private boolean audioState;
     private boolean videoState;
 
@@ -64,6 +66,9 @@ public class CallingPageActivity extends AppCompatActivity {
         endCallView = findViewById(R.id.endcall);
         muteAudioView = findViewById(R.id.muteAudio);
         muteVideoView = findViewById(R.id.muteVideo);
+        shareScreenView = findViewById(R.id.sharescreen);
+        switchCameraView = findViewById(R.id.switchcamera);
+
         alert = getBuilder().create();
         ButterKnife.bind(this);
 

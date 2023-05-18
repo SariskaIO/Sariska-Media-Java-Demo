@@ -20,8 +20,8 @@
 
         <ImageView
             android:id="@+id/endcall"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignBottom="@+id/local_video_view_container"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
@@ -33,8 +33,8 @@
             android:layout_height="40dp"
             android:layout_width="40dp"
             android:layout_marginBottom="20dp"
-            android:layout_marginRight="30dp"
-            android:layout_toLeftOf="@+id/endcall"
+            android:layout_marginEnd="20dp"
+            android:layout_toStartOf="@+id/endcall"
             android:contentDescription="End Call"
             android:layout_alignBottom="@+id/local_video_view_container"
             android:layout_centerHorizontal="true"
@@ -45,12 +45,36 @@
             android:layout_height="40dp"
             android:layout_width="40dp"
             android:layout_marginBottom="20dp"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/endcall"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/endcall"
             android:contentDescription="End Call"
             android:layout_alignBottom="@+id/local_video_view_container"
             android:layout_centerHorizontal="true"
             android:src="@drawable/iconsvideocalloff"/>
+
+        <ImageView
+            android:id="@+id/sharescreen"
+            android:layout_height="40dp"
+            android:layout_width="40dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="80dp"
+            android:layout_toEndOf="@+id/endcall"
+            android:contentDescription="End Call"
+            android:layout_alignBottom="@+id/local_video_view_container"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/baseline_screen_share_24"/>
+
+        <ImageView
+            android:id="@+id/switchcamera"
+            android:layout_height="40dp"
+            android:layout_width="40dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="80dp"
+            android:layout_toStartOf="@+id/endcall"
+            android:contentDescription="End Call"
+            android:layout_alignBottom="@+id/local_video_view_container"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/baseline_cameraswitch_24"/>
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -58,7 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/local_video_view_container"
-            android:layout_marginBottom="60dp"
+            android:layout_marginBottom="100dp"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:reverseLayout="false"
