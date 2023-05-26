@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">sariskademojava</string>
     <string name="blob_provider_authority">io.sariskamediajava.blob</string>
+    <string name="recording">Screen Sharing In Progress</string>
 </resources>

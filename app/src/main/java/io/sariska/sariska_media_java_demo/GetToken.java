@@ -20,7 +20,7 @@ public class GetToken {
         final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         String url = "https://api.sariska.io/api/v1/misc/generate-token";
         String json = "{\n" +
-                "    \"apiKey\": \"249202aabed00b41363794b526eee6927bd35cbc9bac36cd3edcaa\",\n" +
+                "    \"apiKey\": \"2e946faa8fd84f137238d4e135edadc736c001b58cb53d8a2ed1\",\n" +
                 "    \"user\": {\n" +
                 "        \"name\": \""+userID+"\",\n" +
                 "        \"moderator\": true,\n" +
