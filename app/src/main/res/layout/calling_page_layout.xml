@@ -57,24 +57,12 @@
             android:layout_height="40dp"
             android:layout_width="40dp"
             android:layout_marginBottom="20dp"
-            android:layout_marginStart="80dp"
+            android:layout_marginStart="110dp"
             android:layout_toEndOf="@+id/endcall"
             android:contentDescription="End Call"
             android:layout_alignBottom="@+id/local_video_view_container"
             android:layout_centerHorizontal="true"
             android:src="@drawable/baseline_screen_share_24"/>
-
-        <ImageView
-            android:id="@+id/switchcamera"
-            android:layout_height="40dp"
-            android:layout_width="40dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginEnd="80dp"
-            android:layout_toStartOf="@+id/endcall"
-            android:contentDescription="End Call"
-            android:layout_alignBottom="@+id/local_video_view_container"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/baseline_cameraswitch_24"/>
 
 
         <androidx.recyclerview.widget.RecyclerView
