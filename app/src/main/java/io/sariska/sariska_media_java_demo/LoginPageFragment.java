@@ -1,18 +1,22 @@
 package io.sariska.sariska_media_java_demo;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.button.MaterialButton;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginPageFragment extends Fragment {
     Boolean isMuted = false;
     Boolean isVideoMuted = false;
     Boolean isSpeakerOn = false;
@@ -23,41 +27,55 @@ public class LoginActivity extends AppCompatActivity {
             android.Manifest.permission.RECORD_AUDIO
     };
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_page_layout);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.login_page_layout, container, false);
 
-        if (!hasPermissions(this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-        }
-
-        TextView roomName = (TextView) findViewById(R.id.roomName);
-        TextView username = (TextView) findViewById(R.id.username);
+        TextView roomName = (TextView) view.findViewById(R.id.roomName);
+        TextView username = (TextView) view.findViewById(R.id.username);
 
         bundle.putBoolean("audio", true);
         bundle.putBoolean("video", true);
 
-        MaterialButton loginButton = (MaterialButton) findViewById(R.id.loginButton);
+        MaterialButton loginButton = (MaterialButton) view.findViewById(R.id.loginButton);
+        if (!hasPermissions(getActivity(), PERMISSIONS)) {
+            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
+        }
 
-        ImageView muteAudioImage = (ImageView) findViewById(R.id.landingMute);
-        ImageView muteVideoImage = (ImageView) findViewById(R.id.landingVideoMute);
-        ImageView speakerOnOff = (ImageView) findViewById(R.id.speakerOnOff);
+        ImageView muteAudioImage = (ImageView) view.findViewById(R.id.landingMute);
+        ImageView muteVideoImage = (ImageView) view.findViewById(R.id.landingVideoMute);
+        ImageView speakerOnOff = (ImageView) view.findViewById(R.id.speakerOnOff);
 
         setOnClickListenersForOptions(muteAudioImage, muteVideoImage, speakerOnOff);
 
-        loginButton.setOnClickListener(v -> {
-            if(roomName.getText().toString().isEmpty()){
+        loginButton.setOnClickListener(v ->{
+            if(roomName.getText().toString().isEmpty()) {
                 System.out.println("Enter a roomName");
-            }else{
-                Intent i = new Intent(LoginActivity.this, CallingPageActivity.class);
+            }else {
+                System.out.println("Calling fragment");
+                CallingPageFragment fragment = CallingPageFragment.newInstance();
                 bundle.putString("Room Name", roomName.getText().toString());
                 bundle.putString("User Name", username.getText().toString());
-                i.putExtras(bundle);
-                startActivity(i);
+                fragment.setArguments(bundle);
+                navigateToFragment(fragment);
             }
         });
+
+        return view;
     }
+
+
+    private void navigateToFragment(Fragment fragment) {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container, fragment);
+        fragmentTransaction.addToBackStack(null); // Add to back stack to enable back navigation
+        fragmentTransaction.commit();
+    }
+
+
 
     private void setOnClickListenersForOptions(ImageView muteAudioImage, ImageView muteVideoImage, ImageView speakerOnOff) {
         muteAudioImage.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-    private boolean hasPermissions(LoginActivity context, String[] permissions) {
+    private boolean hasPermissions(Activity context, String[] permissions) {
         if (context != null && permissions != null) {
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
