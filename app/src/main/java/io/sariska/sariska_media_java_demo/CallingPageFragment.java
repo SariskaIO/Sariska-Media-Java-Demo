@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -160,6 +161,23 @@ public class CallingPageFragment extends Fragment {
                         });
                     });
 
+                    conference.addEventListener("USER_ROLE_CHANGED", (id, role)-> {
+                        if (conference.getUserId()== id ) {
+                            System.out.println("Your user role changed"+role);
+                        }
+                        if(role.equals("moderator")){
+                            System.out.println("Moderator");
+                            conference.enableLobby();
+                        }
+                    });
+
+                    conference.addEventListener("LOBBY_USER_JOINED", (id, name)-> {
+                        System.out.println("Lobby user joined");
+                        runOnUiThread(() -> {
+                            showLobbyAlert(view, conference, id.toString());
+                        });
+                    });
+
                     conference.join();
 
                     System.out.println("We are past createConference");
@@ -180,6 +198,35 @@ public class CallingPageFragment extends Fragment {
         addRequiredListener(alert);
 
         return view;
+    }
+
+    public void showLobbyAlert(View view, Conference conference, String id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Approve user?");
+        builder.setMessage("Do you want to approve this user?");
+        builder.setPositiveButton("Approve", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked the "Approve" button
+                Toast.makeText(getActivity(), "Action Approved!", Toast.LENGTH_SHORT).show();
+                // Add your approval logic here
+                conference.lobbyApproveAccess(id);
+            }
+        });
+
+        builder.setNegativeButton("Deny", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked the "Deny" button
+                Toast.makeText(getActivity(), "Action Denied!", Toast.LENGTH_SHORT).show();
+                // Add your denial logic here
+                conference.lobbyDenyAccess(id);
+            }
+        });
+
+        // Create and show the alert dialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     private void setupLocalStream(boolean audio, boolean video) {
