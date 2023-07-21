@@ -130,6 +130,11 @@ public class CallingPageFragment extends Fragment {
                         }
                     });
 
+                    conference.addEventListener("CONFERENCE_FAILED", () -> {
+                        System.out.println("conference failed");
+                        conference.joinLobby(conference.getUserName(), "random_email");
+                    });
+
                     conference.addEventListener("DOMINANT_SPEAKER_CHANGED", p -> {
                         String id = (String) p;
                         conference.selectParticipant(id);
