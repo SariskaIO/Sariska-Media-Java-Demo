@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.oney.WebRTCModule.WebRTCModule;
 import com.oney.WebRTCModule.WebRTCView;
 
 import org.json.JSONArray;
@@ -47,6 +48,7 @@ public class CallingPageFragment extends Fragment {
     private ImageView muteAudioView;
     private Bundle roomDetails;
     private ImageView muteVideoView;
+    WebRTCModule webRTCModule;
     private boolean audioState;
     private boolean videoState;
 

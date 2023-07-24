@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.button.MaterialButton;
 
+
 public class LoginPageFragment extends Fragment {
     Boolean isMuted = false;
     Boolean isVideoMuted = false;
