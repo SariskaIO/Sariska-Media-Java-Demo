@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.oney.WebRTCModule.WebRTCModule;
 import com.oney.WebRTCModule.WebRTCView;
 
 import org.json.JSONArray;
@@ -46,6 +48,7 @@ public class CallingPageFragment extends Fragment {
     private ImageView muteAudioView;
     private Bundle roomDetails;
     private ImageView muteVideoView;
+    WebRTCModule webRTCModule;
     private boolean audioState;
     private boolean videoState;
 
@@ -129,6 +132,11 @@ public class CallingPageFragment extends Fragment {
                         }
                     });
 
+                    conference.addEventListener("CONFERENCE_FAILED", () -> {
+                        System.out.println("conference failed");
+                        conference.joinLobby(conference.getUserName(), "random_email");
+                    });
+
                     conference.addEventListener("DOMINANT_SPEAKER_CHANGED", p -> {
                         String id = (String) p;
                         conference.selectParticipant(id);
@@ -160,6 +168,23 @@ public class CallingPageFragment extends Fragment {
                         });
                     });
 
+                    conference.addEventListener("USER_ROLE_CHANGED", (id, role)-> {
+                        if (conference.getUserId()== id ) {
+                            System.out.println("Your user role changed"+role);
+                        }
+                        if(role.equals("moderator")){
+                            System.out.println("Moderator");
+                            conference.enableLobby();
+                        }
+                    });
+
+                    conference.addEventListener("LOBBY_USER_JOINED", (id, name)-> {
+                        System.out.println("Lobby user joined");
+                        runOnUiThread(() -> {
+                            showLobbyAlert(view, conference, id.toString());
+                        });
+                    });
+
                     conference.join();
 
                     System.out.println("We are past createConference");
@@ -180,6 +205,35 @@ public class CallingPageFragment extends Fragment {
         addRequiredListener(alert);
 
         return view;
+    }
+
+    public void showLobbyAlert(View view, Conference conference, String id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Approve user?");
+        builder.setMessage("Do you want to approve this user?");
+        builder.setPositiveButton("Approve", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked the "Approve" button
+                Toast.makeText(getActivity(), "Action Approved!", Toast.LENGTH_SHORT).show();
+                // Add your approval logic here
+                conference.lobbyApproveAccess(id);
+            }
+        });
+
+        builder.setNegativeButton("Deny", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked the "Deny" button
+                Toast.makeText(getActivity(), "Action Denied!", Toast.LENGTH_SHORT).show();
+                // Add your denial logic here
+                conference.lobbyDenyAccess(id);
+            }
+        });
+
+        // Create and show the alert dialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     private void setupLocalStream(boolean audio, boolean video) {
