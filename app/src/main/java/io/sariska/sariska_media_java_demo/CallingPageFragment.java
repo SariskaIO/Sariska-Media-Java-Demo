@@ -40,7 +40,7 @@ import io.sariska.sdk.SariskaMediaTransport;
 public class CallingPageFragment extends Fragment {
     private Connection connection;
     private Conference conference;
-    private View endCallView;
+    private View endCallFab;
     private View muteAudioView;
     private Bundle roomDetails;
     private View muteVideoView;
@@ -56,7 +56,7 @@ public class CallingPageFragment extends Fragment {
     RemoteAdapter sariskaRemoteAdapter;
     AlertDialog leavingAlert;
     private String roomName;
-    private View switchCameraFab;
+    private View swithCameraView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,10 +82,10 @@ public class CallingPageFragment extends Fragment {
 
         // Initialize Views
         mLocalContainer = view.findViewById(R.id.local_video_view_container);
-        endCallView = toolbar.findViewById(R.id.end_call_button);
+        endCallFab = view.findViewById(R.id.end_call_button);
         muteAudioView = toolbar.findViewById(R.id.mute_button);
         muteVideoView = toolbar.findViewById(R.id.mute_video_button);
-        switchCameraFab = view.findViewById(R.id.switchCamera);
+        swithCameraView = toolbar.findViewById(R.id.switch_camera);
 
         // Initialize AlertDialog
         leavingAlert = getBuilder().create();
@@ -264,7 +264,7 @@ public class CallingPageFragment extends Fragment {
 
     private void addRequiredListener(AlertDialog alert) {
 
-        endCallView.setOnClickListener(new View.OnClickListener() {
+        endCallFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alert.show();
@@ -272,7 +272,7 @@ public class CallingPageFragment extends Fragment {
         });
 
 
-        switchCameraFab.setOnClickListener(new View.OnClickListener() {
+        swithCameraView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 for (JitsiLocalTrack track : localTracks) {
