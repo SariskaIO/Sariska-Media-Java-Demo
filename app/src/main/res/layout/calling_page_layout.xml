@@ -17,6 +17,15 @@
             android:orientation="vertical"
             />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom">
+
+
+
+        </LinearLayout>
         <ImageView
             android:id="@+id/endcall"
             android:layout_width="40dp"
@@ -51,6 +60,18 @@
             android:layout_centerHorizontal="true"
             android:src="@drawable/iconsvideocalloff"/>
 
+        <ImageView
+            android:id="@+id/switchCamera"
+            android:layout_height="40dp"
+            android:layout_width="40dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="100dp"
+            android:layout_toRightOf="@+id/endcall"
+            android:contentDescription="Switch Camera"
+            android:layout_alignParentRight="@+id/local_video_view_container"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_baseline_switch_camera_24"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/remoteViewRecycle"

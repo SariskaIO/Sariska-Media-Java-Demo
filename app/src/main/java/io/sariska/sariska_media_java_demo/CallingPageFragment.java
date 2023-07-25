@@ -48,6 +48,7 @@ public class CallingPageFragment extends Fragment {
     private ImageView muteAudioView;
     private Bundle roomDetails;
     private ImageView muteVideoView;
+    private ImageView switCameraView;
     WebRTCModule webRTCModule;
     private boolean audioState;
     private boolean videoState;
@@ -91,6 +92,8 @@ public class CallingPageFragment extends Fragment {
         endCallView = view.findViewById(R.id.endcall);
         muteAudioView = view.findViewById(R.id.muteAudio);
         muteVideoView = view.findViewById(R.id.muteVideo);
+        switCameraView = view.findViewById(R.id.switchCamera);
+
         alert = getBuilder().create();
         ButterKnife.bind(this, view);
         roomDetails = getArguments();
@@ -264,6 +267,17 @@ public class CallingPageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 alert.show();
+            }
+        });
+
+        switCameraView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (JitsiLocalTrack track : localTracks) {
+                    if (track.getType().equals("video")) {
+                        track.switchCamera();
+                    }
+                }
             }
         });
 
