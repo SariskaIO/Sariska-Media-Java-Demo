@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Camera;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,11 +18,13 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.oney.WebRTCModule.WebRTCModule;
 import com.oney.WebRTCModule.WebRTCView;
 
@@ -44,29 +47,23 @@ import io.sariska.sdk.SariskaMediaTransport;
 public class CallingPageFragment extends Fragment {
     private Connection connection;
     private Conference conference;
-    private ImageView endCallView;
-    private ImageView muteAudioView;
+    private View endCallView;
+    private View muteAudioView;
     private Bundle roomDetails;
-    private ImageView muteVideoView;
-    private ImageView switCameraView;
+    private View muteVideoView;
+    private View switCameraView;
     WebRTCModule webRTCModule;
     private boolean audioState;
     private boolean videoState;
-
-    private Bundle optionsBundle;
-
     private RelativeLayout mLocalContainer;
-
     private List<JitsiLocalTrack> localTracks;
-
-    private WebRTCView localView;
-
     @BindView(R.id.remoteViewRecycle)
     RecyclerView rvOtherMemberss;
     ArrayList<JitsiRemoteTrack> remoteTrackArrayList;
     RemoteAdapter sariskaRemoteAdapter;
     AlertDialog alert;
     private String roomName;
+    private View switchCameraFab;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,18 +78,23 @@ public class CallingPageFragment extends Fragment {
             }
         };
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+
+
+
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.calling_page_layout, container, false);
+        Toolbar toolbar = view.findViewById(R.id.bottomAppBar);
+        switchCameraFab = view.findViewById(R.id.switchCamera);
 
         mLocalContainer = view.findViewById(R.id.local_video_view_container);
-        endCallView = view.findViewById(R.id.endcall);
-        muteAudioView = view.findViewById(R.id.muteAudio);
-        muteVideoView = view.findViewById(R.id.muteVideo);
-        switCameraView = view.findViewById(R.id.switchCamera);
+        endCallView = toolbar.findViewById(R.id.end_call_button);
+        muteAudioView = toolbar.findViewById(R.id.mute_button);
+        muteVideoView = toolbar.findViewById(R.id.mute_video_button);
+        //switCameraView = view.findViewById(R.id.sw);
 
         alert = getBuilder().create();
         ButterKnife.bind(this, view);
@@ -270,7 +272,8 @@ public class CallingPageFragment extends Fragment {
             }
         });
 
-        switCameraView.setOnClickListener(new View.OnClickListener() {
+
+        switchCameraFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 for (JitsiLocalTrack track : localTracks) {
@@ -289,11 +292,11 @@ public class CallingPageFragment extends Fragment {
                         if (videoState) {
                             track.mute();
                             videoState = false;
-                            muteVideoView.setImageResource(R.drawable.iconsvideocallon);
+                            //muteVideoView.setImageResource(R.drawable.iconsvideocallon);
                         } else {
                             track.unmute();
                             videoState = true;
-                            muteVideoView.setImageResource(R.drawable.iconsvideocalloff);
+                            //muteVideoView.setImageResource(R.drawable.iconsvideocalloff);
                         }
                     }
                 }
@@ -308,11 +311,11 @@ public class CallingPageFragment extends Fragment {
                         if(audioState){
                             track.mute();
                             audioState = false;
-                            muteAudioView.setImageResource(R.drawable.iconsmicon);
+                            //muteAudioView.setImageResource(R.drawable.iconsmicon);
                         }else{
                             track.unmute();
                             audioState = true;
-                            muteAudioView.setImageResource(R.drawable.iconsmicoff);
+                            //muteAudioView.setImageResource(R.drawable.iconsmicoff);
                         }
                     }
                 }
