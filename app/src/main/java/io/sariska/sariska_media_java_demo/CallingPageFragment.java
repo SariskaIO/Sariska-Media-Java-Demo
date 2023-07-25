@@ -356,9 +356,6 @@ public class CallingPageFragment extends Fragment {
             public void onClick(View v) {
                 String message = messageText.getText().toString().trim();
                 conference.sendMessage(message);
-                messageList.add(message);
-                messageListViewAdapter.notifyDataSetChanged();
-                messageListView.smoothScrollToPosition(messageListViewAdapter.getCount() - 1);
                 sendMessageButton.setVisibility(View.GONE);
                 messageText.setVisibility(View.GONE);
                 messageText.setText("");
