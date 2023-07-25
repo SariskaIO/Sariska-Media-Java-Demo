@@ -186,8 +186,6 @@ public class CallingPageFragment extends Fragment {
                     });
 
                     conference.join();
-
-                    System.out.println("We are past createConference");
                 }
 
                 @Override
