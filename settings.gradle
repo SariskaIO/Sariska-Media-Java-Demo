@@ -37,6 +37,8 @@ dependencyResolutionManagement {
         maven {
             url = "https://maven.pkg.github.com/SariskaIO/maven-repository"
             credentials {
+                print(localProperties['githubUsername'] ?: githubProperties['gpr.usr'])
+                print(localProperties['githubPassword'] ?: githubProperties['gpr.key'])
                 username = localProperties['githubUsername'] ?: githubProperties['gpr.usr']
                 password = localProperties['githubPassword'] ?: githubProperties['gpr.key']
             }

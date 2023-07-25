@@ -1,7 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/fragment_chat_layout">
 
     <ScrollView
         android:id="@+id/chatScrollView"
@@ -30,7 +31,9 @@
             android:layout_weight="1"
             android:hint="Type your message here"
             android:imeOptions="actionSend"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine"
+            android:enabled="false"
+            />
 
         <Button
             android:id="@+id/sendButton"

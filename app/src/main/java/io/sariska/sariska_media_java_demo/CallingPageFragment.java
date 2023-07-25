@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -18,7 +22,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.oney.WebRTCModule.WebRTCModule;
 import com.oney.WebRTCModule.WebRTCView;
 
 import org.json.JSONArray;
@@ -44,8 +47,6 @@ public class CallingPageFragment extends Fragment {
     private View muteAudioView;
     private Bundle roomDetails;
     private View muteVideoView;
-    private View switCameraView;
-    WebRTCModule webRTCModule;
     private boolean audioState;
     private boolean videoState;
     private RelativeLayout mLocalContainer;
@@ -57,6 +58,12 @@ public class CallingPageFragment extends Fragment {
     AlertDialog leavingAlert;
     private String roomName;
     private View swithCameraView;
+    private View messageView;
+    private EditText messageText;
+    private ImageView sendMessageButton;
+    private ArrayList<String> messageList;
+    private ArrayAdapter<String> messageListViewAdapter;
+    private ListView messageListView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,6 +93,14 @@ public class CallingPageFragment extends Fragment {
         muteAudioView = toolbar.findViewById(R.id.mute_button);
         muteVideoView = toolbar.findViewById(R.id.mute_video_button);
         swithCameraView = toolbar.findViewById(R.id.switch_camera);
+        messageView = toolbar.findViewById(R.id.message);
+        messageText = view.findViewById(R.id.messageInput);
+        sendMessageButton = view.findViewById(R.id.sendMessageButton);
+        messageList = new ArrayList<>();
+        messageListView = view.findViewById(R.id.messageListView);
+        messageListViewAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, messageList);
+        messageListView.setAdapter(messageListViewAdapter);
+        messageListView.smoothScrollToPosition(messageListViewAdapter.getCount() - 1);
 
         // Initialize AlertDialog
         leavingAlert = getBuilder().create();
@@ -188,6 +203,16 @@ public class CallingPageFragment extends Fragment {
                         });
                     });
 
+                    conference.addEventListener("MESSAGE_RECEIVED", (participantId, message) ->{
+                        System.out.println("message");
+                        System.out.println(message);
+                        messageList.add(message.toString());
+                        runOnUiThread(() -> {
+                            messageListViewAdapter.notifyDataSetChanged();
+                            messageListView.smoothScrollToPosition(messageListViewAdapter.getCount() - 1);
+                        });
+                    });
+
                     conference.join();
                 }
 
@@ -263,7 +288,6 @@ public class CallingPageFragment extends Fragment {
     }
 
     private void addRequiredListener(AlertDialog alert) {
-
         endCallFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -271,6 +295,12 @@ public class CallingPageFragment extends Fragment {
             }
         });
 
+        messageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openChatBox();
+            }
+        });
 
         swithCameraView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -320,7 +350,27 @@ public class CallingPageFragment extends Fragment {
                 }
             }
         });
+
+        sendMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = messageText.getText().toString().trim();
+                conference.sendMessage(message);
+                messageList.add(message);
+                messageListViewAdapter.notifyDataSetChanged();
+                messageListView.smoothScrollToPosition(messageListViewAdapter.getCount() - 1);
+                sendMessageButton.setVisibility(View.GONE);
+                messageText.setVisibility(View.GONE);
+                messageText.setText("");
+            }
+        });
     }
+
+    private void openChatBox() {
+        messageText.setVisibility(View.VISIBLE);
+        sendMessageButton.setVisibility(View.VISIBLE);
+    }
+
 
     public AlertDialog.Builder getBuilder(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
