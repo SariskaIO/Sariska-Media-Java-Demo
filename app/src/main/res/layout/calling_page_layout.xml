@@ -25,13 +25,16 @@
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/switchCamera"
+            android:id="@+id/end_call_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
             android:layout_gravity="bottom|end"
-            android:backgroundTint="@color/primary"
+            android:backgroundTint="@color/red"
+            app:tint="#FFFFFF"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_baseline_switch_camera_24"
+            android:src="@drawable/baseline_call_end_24"
             app:layout_anchor="@id/bottomAppBar" />
 
 
@@ -40,6 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layoutDirection="rtl"
             android:layout_gravity="bottom"
             android:backgroundTint="@color/primary"
             app:fabAlignmentMode="center"

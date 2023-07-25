@@ -7,46 +7,27 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/separator_1"
-        android:title=""
-        android:enabled="false"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/mute_video_button"
         android:icon="@drawable/ic_baseline_videocam_24"
         android:title="mute video"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/separator_2"
-        android:title=""
-        android:enabled="false"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/end_call_button"
-        android:icon="@drawable/ic_baseline_call_end_24"
+        android:id="@+id/switch_camera"
+        android:icon="@drawable/ic_baseline_switch_camera_24"
         android:title="end call"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/separator_3"
-        android:title=""
-        android:enabled="false"
-        app:showAsAction="always" />
-
-
-    <item
-        android:id="@+id/speaker_button"
-        android:icon="@drawable/ic_baseline_volume_up_24"
-        android:title="speaker"
+        android:id="@+id/message"
+        android:icon="@drawable/baseline_message_24"
+        android:title="Message"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/switch_camera"
+        android:id="@+id/Speaker"
         android:icon="@drawable/ic_baseline_volume_up_24"
-        android:title="speaker"
+        android:title="Switch Camera"
         app:showAsAction="ifRoom" />
 
     <!-- Add more menu items as needed -->
