@@ -17,11 +17,39 @@
             android:orientation="vertical"
             />
 
+        <ListView
+            android:id="@+id/messageListView"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_above="@id/remoteViewRecycle" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_gravity="bottom">
+            android:padding="16dp"
+            android:layout_above="@id/remoteViewRecycle"
+            >
+
+            <EditText
+                android:id="@+id/messageInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Type your message here"
+                android:imeOptions="actionSend"
+                android:inputType="textMultiLine"
+                android:visibility="gone"
+                />
+
+            <ImageView
+                android:id="@+id/sendMessageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_send_24"
+                android:visibility="gone"
+                android:text="Send" />
+
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
