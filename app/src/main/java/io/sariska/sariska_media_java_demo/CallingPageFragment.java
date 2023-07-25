@@ -3,14 +3,10 @@ package io.sariska.sariska_media_java_demo;
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Camera;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -20,11 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.oney.WebRTCModule.WebRTCModule;
 import com.oney.WebRTCModule.WebRTCView;
 
@@ -61,7 +54,7 @@ public class CallingPageFragment extends Fragment {
     RecyclerView rvOtherMemberss;
     ArrayList<JitsiRemoteTrack> remoteTrackArrayList;
     RemoteAdapter sariskaRemoteAdapter;
-    AlertDialog alert;
+    AlertDialog leavingAlert;
     private String roomName;
     private View switchCameraFab;
 
@@ -74,13 +67,11 @@ public class CallingPageFragment extends Fragment {
             @Override
             public void handleOnBackPressed() {
                 // Handle the back button event
-                alert.show();
+                leavingAlert.show();
             }
         };
+
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
-
-
-
     }
 
     @Nullable
@@ -88,24 +79,31 @@ public class CallingPageFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.calling_page_layout, container, false);
         Toolbar toolbar = view.findViewById(R.id.bottomAppBar);
-        switchCameraFab = view.findViewById(R.id.switchCamera);
 
+        // Initialize Views
         mLocalContainer = view.findViewById(R.id.local_video_view_container);
         endCallView = toolbar.findViewById(R.id.end_call_button);
         muteAudioView = toolbar.findViewById(R.id.mute_button);
         muteVideoView = toolbar.findViewById(R.id.mute_video_button);
-        //switCameraView = view.findViewById(R.id.sw);
+        switchCameraFab = view.findViewById(R.id.switchCamera);
 
-        alert = getBuilder().create();
+        // Initialize AlertDialog
+        leavingAlert = getBuilder().create();
         ButterKnife.bind(this, view);
+
+        // Get room details from bundle
         roomDetails = getArguments();
         roomName = roomDetails.getString("roomName");
         String roomName = roomDetails.getString("Room Name");
         String userName = roomDetails.getString("User Name");
         audioState = roomDetails.getBoolean("audio");
         videoState = roomDetails.getBoolean("video");
+
+
         SariskaMediaTransport.initializeSdk(getActivity().getApplication());
+
         this.setupLocalStream(true, true);
+
         try {
             GetToken.generateToken(userName, new GetToken.HttpRequestCallback() {
                 @Override
@@ -195,6 +193,7 @@ public class CallingPageFragment extends Fragment {
 
                 @Override
                 public void onFailure(Throwable throwable) {
+                    System.out.println("Error in getting token");
 
                 }
             });
@@ -205,7 +204,7 @@ public class CallingPageFragment extends Fragment {
         remoteTrackArrayList = new ArrayList<>();
         sariskaRemoteAdapter = new RemoteAdapter();
         rvOtherMemberss.setAdapter(sariskaRemoteAdapter);
-        addRequiredListener(alert);
+        addRequiredListener(leavingAlert);
 
         return view;
     }
@@ -235,8 +234,8 @@ public class CallingPageFragment extends Fragment {
         });
 
         // Create and show the alert dialog
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+        AlertDialog lobbyAlert = builder.create();
+        lobbyAlert.show();
     }
 
     private void setupLocalStream(boolean audio, boolean video) {
@@ -322,8 +321,6 @@ public class CallingPageFragment extends Fragment {
             }
         });
     }
-
-
 
     public AlertDialog.Builder getBuilder(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
