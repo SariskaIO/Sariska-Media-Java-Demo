@@ -3,13 +3,14 @@ package io.sariska.sariska_media_java_demo;
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Camera;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -17,12 +18,10 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.oney.WebRTCModule.WebRTCModule;
 import com.oney.WebRTCModule.WebRTCView;
 
 import org.json.JSONArray;
@@ -44,28 +43,27 @@ import io.sariska.sdk.SariskaMediaTransport;
 public class CallingPageFragment extends Fragment {
     private Connection connection;
     private Conference conference;
-    private ImageView endCallView;
-    private ImageView muteAudioView;
+    private View endCallFab;
+    private View muteAudioView;
     private Bundle roomDetails;
-    private ImageView muteVideoView;
-    WebRTCModule webRTCModule;
+    private View muteVideoView;
     private boolean audioState;
     private boolean videoState;
-
-    private Bundle optionsBundle;
-
     private RelativeLayout mLocalContainer;
-
     private List<JitsiLocalTrack> localTracks;
-
-    private WebRTCView localView;
-
     @BindView(R.id.remoteViewRecycle)
     RecyclerView rvOtherMemberss;
     ArrayList<JitsiRemoteTrack> remoteTrackArrayList;
     RemoteAdapter sariskaRemoteAdapter;
-    AlertDialog alert;
+    AlertDialog leavingAlert;
     private String roomName;
+    private View swithCameraView;
+    private View messageView;
+    private EditText messageText;
+    private ImageView sendMessageButton;
+    private ArrayList<String> messageList;
+    private ArrayAdapter<String> messageListViewAdapter;
+    private ListView messageListView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,9 +74,10 @@ public class CallingPageFragment extends Fragment {
             @Override
             public void handleOnBackPressed() {
                 // Handle the back button event
-                alert.show();
+                leavingAlert.show();
             }
         };
+
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
@@ -86,21 +85,40 @@ public class CallingPageFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.calling_page_layout, container, false);
+        Toolbar toolbar = view.findViewById(R.id.bottomAppBar);
 
+        // Initialize Views
         mLocalContainer = view.findViewById(R.id.local_video_view_container);
-        endCallView = view.findViewById(R.id.endcall);
-        muteAudioView = view.findViewById(R.id.muteAudio);
-        muteVideoView = view.findViewById(R.id.muteVideo);
-        alert = getBuilder().create();
+        endCallFab = view.findViewById(R.id.end_call_button);
+        muteAudioView = toolbar.findViewById(R.id.mute_button);
+        muteVideoView = toolbar.findViewById(R.id.mute_video_button);
+        swithCameraView = toolbar.findViewById(R.id.switch_camera);
+        messageView = toolbar.findViewById(R.id.message);
+        messageText = view.findViewById(R.id.messageInput);
+        sendMessageButton = view.findViewById(R.id.sendMessageButton);
+        messageList = new ArrayList<>();
+        messageListView = view.findViewById(R.id.messageListView);
+        messageListViewAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, messageList);
+        messageListView.setAdapter(messageListViewAdapter);
+        messageListView.smoothScrollToPosition(messageListViewAdapter.getCount() - 1);
+
+        // Initialize AlertDialog
+        leavingAlert = getBuilder().create();
         ButterKnife.bind(this, view);
+
+        // Get room details from bundle
         roomDetails = getArguments();
         roomName = roomDetails.getString("roomName");
         String roomName = roomDetails.getString("Room Name");
         String userName = roomDetails.getString("User Name");
         audioState = roomDetails.getBoolean("audio");
         videoState = roomDetails.getBoolean("video");
+
+
         SariskaMediaTransport.initializeSdk(getActivity().getApplication());
+
         this.setupLocalStream(true, true);
+
         try {
             GetToken.generateToken(userName, new GetToken.HttpRequestCallback() {
                 @Override
@@ -185,11 +203,22 @@ public class CallingPageFragment extends Fragment {
                         });
                     });
 
+                    conference.addEventListener("MESSAGE_RECEIVED", (participantId, message) ->{
+                        System.out.println("message");
+                        System.out.println(message);
+                        messageList.add(message.toString());
+                        runOnUiThread(() -> {
+                            messageListViewAdapter.notifyDataSetChanged();
+                            messageListView.smoothScrollToPosition(messageListViewAdapter.getCount() - 1);
+                        });
+                    });
+
                     conference.join();
                 }
 
                 @Override
                 public void onFailure(Throwable throwable) {
+                    System.out.println("Error in getting token");
 
                 }
             });
@@ -200,7 +229,7 @@ public class CallingPageFragment extends Fragment {
         remoteTrackArrayList = new ArrayList<>();
         sariskaRemoteAdapter = new RemoteAdapter();
         rvOtherMemberss.setAdapter(sariskaRemoteAdapter);
-        addRequiredListener(alert);
+        addRequiredListener(leavingAlert);
 
         return view;
     }
@@ -230,8 +259,8 @@ public class CallingPageFragment extends Fragment {
         });
 
         // Create and show the alert dialog
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+        AlertDialog lobbyAlert = builder.create();
+        lobbyAlert.show();
     }
 
     private void setupLocalStream(boolean audio, boolean video) {
@@ -259,11 +288,28 @@ public class CallingPageFragment extends Fragment {
     }
 
     private void addRequiredListener(AlertDialog alert) {
-
-        endCallView.setOnClickListener(new View.OnClickListener() {
+        endCallFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alert.show();
+            }
+        });
+
+        messageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openChatBox();
+            }
+        });
+
+        swithCameraView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (JitsiLocalTrack track : localTracks) {
+                    if (track.getType().equals("video")) {
+                        track.switchCamera();
+                    }
+                }
             }
         });
 
@@ -275,11 +321,11 @@ public class CallingPageFragment extends Fragment {
                         if (videoState) {
                             track.mute();
                             videoState = false;
-                            muteVideoView.setImageResource(R.drawable.iconsvideocallon);
+                            //muteVideoView.setImageResource(R.drawable.iconsvideocallon);
                         } else {
                             track.unmute();
                             videoState = true;
-                            muteVideoView.setImageResource(R.drawable.iconsvideocalloff);
+                            //muteVideoView.setImageResource(R.drawable.iconsvideocalloff);
                         }
                     }
                 }
@@ -294,18 +340,33 @@ public class CallingPageFragment extends Fragment {
                         if(audioState){
                             track.mute();
                             audioState = false;
-                            muteAudioView.setImageResource(R.drawable.iconsmicon);
+                            //muteAudioView.setImageResource(R.drawable.iconsmicon);
                         }else{
                             track.unmute();
                             audioState = true;
-                            muteAudioView.setImageResource(R.drawable.iconsmicoff);
+                            //muteAudioView.setImageResource(R.drawable.iconsmicoff);
                         }
                     }
                 }
             }
         });
+
+        sendMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = messageText.getText().toString().trim();
+                conference.sendMessage(message);
+                sendMessageButton.setVisibility(View.GONE);
+                messageText.setVisibility(View.GONE);
+                messageText.setText("");
+            }
+        });
     }
 
+    private void openChatBox() {
+        messageText.setVisibility(View.VISIBLE);
+        sendMessageButton.setVisibility(View.VISIBLE);
+    }
 
 
     public AlertDialog.Builder getBuilder(){

@@ -1,0 +1,35 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mute_button"
+        android:icon="@drawable/ic_baseline_mic_24"
+        android:title="mute audio"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/mute_video_button"
+        android:icon="@drawable/ic_baseline_videocam_24"
+        android:title="mute video"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/switch_camera"
+        android:icon="@drawable/ic_baseline_switch_camera_24"
+        android:title="end call"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/message"
+        android:icon="@drawable/baseline_message_24"
+        android:title="Message"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/Speaker"
+        android:icon="@drawable/ic_baseline_volume_up_24"
+        android:title="Switch Camera"
+        app:showAsAction="ifRoom" />
+
+    <!-- Add more menu items as needed -->
+
+</menu>
